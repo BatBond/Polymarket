@@ -1,0 +1,638 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #0a0e0a;
+  --panel: #0f1410;
+  --panel-border: #1a2a1a;
+  --green: #2ecc71;
+  --green-dim: #1a5c3a;
+  --green-glow: rgba(46, 204, 113, 0.15);
+  --red: #e74c3c;
+  --red-dim: #5c1a1a;
+  --text: #c8d6c8;
+  --text-dim: #6a7a6a;
+  --text-bright: #e8f5e8;
+  --accent: #3ddc84;
+  --gray: #4a5a4a;
+  --gray-light: #8a9a8a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Space Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  margin-bottom: 12px;
+  border-radius: 4px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-dot {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logo-dot::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+}
+
+.header-title {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.wallet-address {
+  color: var(--text-bright);
+}
+
+.separator {
+  color: var(--gray);
+  margin: 0 4px;
+}
+
+.zero-label {
+  color: var(--gray-light);
+}
+
+.model-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 1px;
+}
+
+.mirofish {
+  color: var(--red);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-badge.live {
+  background: var(--green-glow);
+  border-color: var(--green-dim);
+  color: var(--green);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.round-info {
+  padding: 4px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.round-number {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.utc-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+/* Top Stats Section */
+.top-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pnl-card, .top-wins-card {
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.pnl-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.red { background: var(--red); }
+.dot.green { background: var(--green); }
+
+.badge {
+  padding: 2px 8px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.badge.crypto-tail-sniper {
+  border-color: var(--red-dim);
+  color: var(--red);
+}
+
+.badge.btc {
+  border-color: var(--green-dim);
+  color: var(--green);
+}
+
+.pnl-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.pnl-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  color: var(--text);
+}
+
+.win-rate {
+  color: var(--green);
+}
+
+.pnl-breakdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.pnl-item {
+  padding: 8px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  text-align: center;
+}
+
+.pnl-amount {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.pnl-amount.positive {
+  color: var(--green);
+}
+
+.pnl-desc {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* Top Wins Card */
+.card-header {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.win-count {
+  color: var(--red);
+}
+
+.win-stats {
+  margin-bottom: 12px;
+}
+
+.multiplier {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-bright);
+  position: relative;
+}
+
+.sub-mult {
+  font-size: 16px;
+  color: var(--text-dim);
+  margin-left: 4px;
+}
+
+.win-details {
+  margin: 8px 0;
+}
+
+.detail-row {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 4px 0;
+}
+
+.highlight {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.highlight.positive {
+  color: var(--green);
+}
+
+.arrow {
+  margin: 0 8px;
+  color: var(--green);
+}
+
+.win-amount {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.win-amount.positive {
+  color: var(--green);
+}
+
+#topWinsChart {
+  width: 100%;
+  height: 120px;
+}
+
+/* Section Styles */
+.section {
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.section-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Probability Lattice */
+.lattice-container {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 16px;
+}
+
+.lattice-stats {
+  border-right: 1px dashed var(--panel-border);
+  padding-right: 16px;
+}
+
+.stat-group {
+  margin-bottom: 16px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  font-size: 11px;
+}
+
+.stat-name {
+  color: var(--text-dim);
+}
+
+.stat-value {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.stat-value.positive {
+  color: var(--green);
+}
+
+.stat-value.negative {
+  color: var(--red);
+}
+
+.law-text {
+  margin-top: 24px;
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.lattice-viz {
+  position: relative;
+  height: 400px;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--panel) 100%);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Tail Probability Ridge */
+.ridge-container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+}
+
+.ridge-stats {
+  border-right: 1px dashed var(--panel-border);
+  padding-right: 16px;
+}
+
+.pennies-text {
+  margin-top: 24px;
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.ridge-viz {
+  position: relative;
+  height: 400px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Relationship Graph */
+.graph-container {
+  display: grid;
+  grid-template-columns: 200px 1fr 250px;
+  gap: 16px;
+}
+
+.graph-legend {
+  border-right: 1px dashed var(--panel-border);
+  padding-right: 16px;
+}
+
+.legend-title {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 11px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.bear { background: var(--red); }
+.legend-dot.bull { background: var(--green); }
+.legend-dot.median { background: var(--gray-light); }
+.legend-dot.catalyst { background: var(--accent); }
+.legend-dot.cluster { background: var(--text-bright); }
+
+.graph-stats {
+  margin-top: 24px;
+}
+
+.graph-viz {
+  position: relative;
+  height: 500px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.graph-metrics {
+  border-left: 1px dashed var(--panel-border);
+  padding-left: 16px;
+}
+
+.metrics-header {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  letter-spacing: 1px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.metric-value.positive {
+  color: var(--green);
+}
+
+.metric-value.negative {
+  color: var(--red);
+}
+
+#edgeDistributionChart {
+  width: 100%;
+  height: 150px;
+  margin-top: 16px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--panel-border);
+  margin-top: 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-item {
+  letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .top-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .lattice-container,
+  .ridge-container,
+  .graph-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .lattice-stats,
+  .ridge-stats,
+  .graph-legend,
+  .graph-metrics {
+    border: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+  
+  .pnl-breakdown {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .pnl-breakdown {
+    grid-template-columns: 1fr;
+  }
+  
+  .pnl-value {
+    font-size: 24px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.section {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}

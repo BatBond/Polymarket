@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Fable 5 · Mirofish — Trading Dashboard Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0a0e0a;
+    --panel: #0f1410;
+    --panel-border: #1a2a1a;
+    --green: #2ecc71;
+    --green-dim: #1a5c3a;
+    --green-glow: rgba(46, 204, 113, 0.15);
+    --red: #e74c3c;
+    --red-dim: #5c1a1a;
+    --text: #c8d6c8;
+    --text-dim: #6a7a6a;
+    --text-bright: #e8f5e8;
+    --accent: #3ddc84;
+    --gray: #4a5a4a;
+    --gray-light: #8a9a8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    padding: 20px;
+  }
+
+  .dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    margin-bottom: 12px;
+    border-radius: 4px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-dot {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .logo-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+  }
+
+  .header-title {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .wallet-address { color: var(--text-bright); }
+  .separator { color: var(--gray); margin: 0 4px; }
+  
+  .model-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    letter-spacing: 1px;
+  }
+
+  .mirofish { color: var(--red); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-badge {
+    padding: 4px 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-glow);
+    border-color: var(--green-dim);
+    color: var(--green);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .round-info {
+    padding: 4px 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  .round-number { color: var(--text-bright); font-weight: 600; }
+  .utc-time { font-size: 13px; font-weight: 600; color: var(--text-bright); }
+
+  .top-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .pnl-card, .top-wins-card {
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    padding: 16px;
+    border-radius: 4px;
+  }
+
+  .pnl-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .dot.red { background: var(--red); }
+
+  .badge {
+    padding: 2px 8px;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .badge.crypto-tail-sniper {
+    border-color: var(--red-dim);
+    color: var(--red);
+  }
+
+  .badge.btc {
+    border-color: var(--green-dim);
+    color: var(--green);
+  }
+
+  .pnl-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .pnl-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-item { color: var(--text); }
+  .win-rate { color: var(--green); }
+
+  .pnl-breakdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .pnl-item {
+    padding: 8px;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    text-align: center;
+  }
+
+  .pnl-amount {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--green);
+  }
+
+  .pnl-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .card-header {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .win-count { color: var(--red); }
+
+  .win-stats { margin-bottom: 12px; }
+
+  .multiplier {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .sub-mult {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-left: 4px;
+  }
+
+  .win-details { margin: 8px 0; }
+
+  .detail-row {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin: 4px 0;
+  }
+
+  .highlight {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .highlight.positive { color: var(--green); }
+  .arrow { margin: 0 8px; color: var(--green); }
+  .win-amount {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: right;
+    color: var(--green);
+  }
+
+  #topWinsChart {
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(180deg, transparent 0%, var(--green-glow) 100%);
+    border-radius: 4px;
+  }
+
+  .section {
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    padding: 16px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .section-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lattice-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 16px;
+  }
+
+  .lattice-stats {
+    border-right: 1px dashed var(--panel-border);
+    padding-right: 16px;
+  }
+
+  .stat-group { margin-bottom: 16px; }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 11px;
+  }
+
+  .stat-name { color: var(--text-dim); }
+  .stat-value {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+  .stat-value.positive { color: var(--green); }
+
+  .law-text {
+    margin-top: 24px;
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .lattice-viz {
+    position: relative;
+    height: 400px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--panel) 100%);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .ridge-container {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+
+  .ridge-stats {
+    border-right: 1px dashed var(--panel-border);
+    padding-right: 16px;
+  }
+
+  .pennies-text {
+    margin-top: 24px;
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .ridge-viz {
+    position: relative;
+    height: 400px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .graph-container {
+    display: grid;
+    grid-template-columns: 200px 1fr 250px;
+    gap: 16px;
+  }
+
+  .graph-legend {
+    border-right: 1px dashed var(--panel-border);
+    padding-right: 16px;
+  }
+
+  .legend-title {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    font-size: 11px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.bear { background: var(--red); }
+  .legend-dot.bull { background: var(--green); }
+  .legend-dot.median { background: var(--gray-light); }
+  .legend-dot.catalyst { background: var(--accent); }
+  .legend-dot.cluster { background: var(--text-bright); }
+
+  .graph-stats { margin-top: 24px; }
+
+  .graph-viz {
+    position: relative;
+    height: 500px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .graph-metrics {
+    border-left: 1px dashed var(--panel-border);
+    padding-left: 16px;
+  }
+
+  .metrics-header {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 1px;
+  }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .metric-value.positive { color: var(--green); }
+  .metric-value.negative { color: var(--red); }
+
+  #edgeDistributionChart {
+    width: 100%;
+    height: 150px;
+    margin-top: 16px;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--panel-border);
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .preview-notice {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--red);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    z-index: 1000;
+  }
+
+  @media (max-width: 1200px) {
+    .top-stats { grid-template-columns: 1fr; }
+    .lattice-container,
+    .ridge-container,
+    .graph-container { grid-template-columns: 1fr; }
+    .lattice-stats,
+    .ridge-stats,
+    .graph-legend,
+    .graph-metrics {
+      border: none;
+      padding: 0;
+      margin-bottom: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="preview-notice">📊 PREVIEW MODE</div>
+  
+  <div class="dashboard">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-dot"></div>
+        <div>
+          <div class="header-title">
+            ANONYMOUS WALLET <span class="wallet-address">0x06DC...4524</span>
+            <span class="separator">·</span>
+            <span>5,944 FILLS</span>
+            <span class="separator">·</span>
+            <span style="color: var(--gray-light);">ZERO_</span>
+          </div>
+          <div class="model-name">CLAUDE FABLE 5 · <span class="mirofish">MIROFISH</span></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          LIVE · MAINNET
+        </div>
+        <div class="round-info">
+          ROUND <span class="round-number">#7105</span>
+        </div>
+        <div class="utc-time" id="utc-time">22:09:48 UTC</div>
+      </div>
+    </header>
+
+    <!-- Top Stats Section -->
+    <section class="top-stats">
+      <div class="pnl-card">
+        <div class="pnl-label">
+          <span class="dot red"></span>
+          CLAUDE FABLE 5 · TOTAL PNL
+          <span class="badge crypto-tail-sniper">CRYPTO TAIL SNIPER</span>
+          <span class="badge btc">+1 BTC</span>
+        </div>
+        <div class="pnl-value">$406,984</div>
+        <div class="pnl-meta">
+          <span>realised · anonymous</span>
+          <span class="stat-item"><span>5,944</span> trades</span>
+          <span class="stat-item win-rate"><span>71</span>% WR</span>
+          <span class="stat-item">Sharpe <span>4.21</span></span>
+        </div>
+        <div class="pnl-breakdown">
+          <div class="pnl-item">
+            <div class="pnl-amount">+$31,423</div>
+            <div class="pnl-desc">ETH +2.8K · APR</div>
+          </div>
+          <div class="pnl-item">
+            <div class="pnl-amount">+$29,247</div>
+            <div class="pnl-desc">XRP UP · APR B</div>
+          </div>
+          <div class="pnl-item">
+            <div class="pnl-amount">+$28,062</div>
+            <div class="pnl-desc">BTC +66K · JUN</div>
+          </div>
+          <div class="pnl-item">
+            <div class="pnl-amount">+$14,276</div>
+            <div class="pnl-desc">ETH +2.4K · APR</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-wins-card">
+        <div class="card-header">
+          <span>★ TOP WINS · BTC · POLYMARKET</span>
+          <span class="win-count">6 / 6</span>
+        </div>
+        <div class="win-stats">
+          <div class="multiplier">x32<span class="sub-mult">+47</span></div>
+          <div class="win-details">
+            <div class="detail-row">
+              <span>APR · 80L ± +100 · VES @ 1.4%</span>
+            </div>
+            <div class="detail-row">
+              <span>ENTRY <span class="highlight">$387</span></span>
+              <span class="arrow">→</span>
+              <span>PAYOUT <span class="highlight positive">$12,553</span></span>
+            </div>
+          </div>
+          <div class="win-amount">+$12,167</div>
+        </div>
+        <canvas id="topWinsChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Probability Lattice Section -->
+    <section class="section probability-lattice">
+      <div class="section-header">
+        <span class="dot" style="background: var(--green);"></span>
+        Probability Lattice · <span>5,944</span> Trades, One Board
+      </div>
+      <div class="lattice-container">
+        <div class="lattice-stats">
+          <div class="stat-group">
+            <div class="stat-label">LIVE CONVERGENCE</div>
+            <div class="stat-row">
+              <span class="stat-name">BALLS DROPPED</span>
+              <span class="stat-value">265</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">LANDED GREEN</span>
+              <span class="stat-value positive">75.8%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">EV / TRADE</span>
+              <span class="stat-value positive">+$75</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">SESSION P&L</span>
+              <span class="stat-value positive">+$19,778</span>
+            </div>
+          </div>
+          <div class="stat-group">
+            <div class="stat-row">
+              <span class="stat-name">ALL-TIME</span>
+              <span class="stat-value">5,944</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">REALISED</span>
+              <span class="stat-value positive">+$401,819</span>
+            </div>
+          </div>
+          <div class="law-text">
+            LAW OF LARGE NUMBERS — THE EDGE<br>
+            ONLY NEEDS REPETITION
+          </div>
+        </div>
+        <div class="lattice-viz" id="latticeViz">
+          <!-- Canvas for lattice visualization -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tail Probability Ridge Section -->
+    <section class="section tail-ridge">
+      <div class="section-header">
+        <span class="dot" style="background: var(--green);"></span>
+        Tail Probability Ridge · Strike Landscape
+      </div>
+      <div class="ridge-container">
+        <div class="ridge-stats">
+          <div class="stat-label">TAIL SCANNER · LIVE</div>
+          <div class="stat-row">
+            <span class="stat-name">SESSIONS</span>
+            <span class="stat-value">1,292</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">TAIL MASS</span>
+            <span class="stat-value">0.21%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">IMPLIED MULT</span>
+            <span class="stat-value">×476.2</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">AVG ENTRY</span>
+            <span class="stat-value">1.2¢</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">BEST HIT</span>
+            <span class="stat-value positive">×81.2</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">ALL-TIME</span>
+            <span class="stat-value">5,944</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-name">REALISED</span>
+            <span class="stat-value positive">+$401,819</span>
+          </div>
+          <div class="pennies-text">
+            PENNIES INTO THE TAIL — HUNDREDS<br>
+            OUT WHEN THE STRIKE BREAKS
+          </div>
+        </div>
+        <div class="ridge-viz" id="ridgeViz">
+          <!-- Canvas for ridge visualization -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Relationship Graph Section -->
+    <section class="section relationship-graph">
+      <div class="section-header">
+        <span class="dot" style="background: var(--green);"></span>
+        MIROFISH · RELATIONSHIP GRAPH SIMULATION
+      </div>
+      <div class="graph-container">
+        <div class="graph-legend">
+          <div class="legend-title">NODE CLASS</div>
+          <div class="legend-item">
+            <span class="legend-dot bear"></span>
+            <span>Bear signal</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot bull"></span>
+            <span>Bull signal</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot median"></span>
+            <span>Median path</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot catalyst"></span>
+            <span>Catalyst</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot cluster"></span>
+            <span>Cluster hub</span>
+          </div>
+          <div class="graph-stats">
+            <div class="stat-row">
+              <span class="stat-name">BEAR PATHS</span>
+              <span class="stat-value">570</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">BULL PATHS</span>
+              <span class="stat-value">1,433</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">PATHS SIM</span>
+              <span class="stat-value">2,112</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">ITER / SEC</span>
+              <span class="stat-value">281</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">CONVERGENCE</span>
+              <span class="stat-value">95%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">PREDICTED</span>
+              <span class="stat-value positive">▲ UP</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">MEDIAN FAIR</span>
+              <span class="stat-value">$75,181</span>
+            </div>
+          </div>
+        </div>
+        <div class="graph-viz" id="graphViz">
+          <!-- Canvas for relationship graph -->
+        </div>
+        <div class="graph-metrics">
+          <div class="metrics-header">
+            <span>NODES <span>66</span></span>
+            <span>EDGES <span>149</span></span>
+            <span>SIGNAL <span>94.8%</span></span>
+            <span>ITER <span>1136</span></span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">P(UP)</span>
+            <span class="metric-value positive">0.72</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">P(DOWN)</span>
+            <span class="metric-value negative">0.28</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">EDGE VS BOOK</span>
+            <span class="metric-value positive">+32¢</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">CONFIDENCE</span>
+            <span class="metric-value">94.8%</span>
+          </div>
+          <canvas id="edgeDistributionChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-item">AGENT ONLINE</div>
+      <div class="footer-item">MODEL CLAUDE-FABLE-5</div>
+      <div class="footer-item">TRACKER 0X06DC...4524</div>
+      <div class="footer-item">5,944 FILLS</div>
+      <div class="footer-item">BACKTEST BY · 41.9 GB</div>
+      <div class="footer-item">LATENCY 10MS</div>
+      <div class="footer-item">STACK MIROFISH-CORE · FABLE-FORK</div>
+    </footer>
+  </div>
+
+<script>
+// Update UTC time
+function updateUTCTime() {
+  const now = new Date();
+  const timeString = now.toISOString().substr(11, 8) + ' UTC';
+  document.getElementById('utc-time').textContent = timeString;
+}
+setInterval(updateUTCTime, 1000);
+updateUTCTime();
+
+// Draw Top Wins Chart
+const topWinsCanvas = document.getElementById('topWinsChart');
+const topWinsCtx = topWinsCanvas.getContext('2d');
+topWinsCanvas.width = topWinsCanvas.offsetWidth;
+topWinsCanvas.height = topWinsCanvas.offsetHeight;
+
+const topWinsData = [2000, 4500, 6000, 8500, 10000, 11500, 12167];
+const gradient = topWinsCtx.createLinearGradient(0, 0, 0, topWinsCanvas.height);
+gradient.addColorStop(0, 'rgba(46, 204, 113, 0.3)');
+gradient.addColorStop(1, 'rgba(46, 204, 113, 0.01)');
+
+topWinsCtx.beginPath();
+topWinsCtx.moveTo(0, topWinsCanvas.height);
+const stepX = topWinsCanvas.width / (topWinsData.length - 1);
+topWinsData.forEach((value, i) => {
+  const x = i * stepX;
+  const y = topWinsCanvas.height - (value / 12167) * (topWinsCanvas.height - 20);
+  if (i === 0) topWinsCtx.lineTo(x, y);
+  else {
+    const prevX = (i - 1) * stepX;
+    const prevY = topWinsCanvas.height - (topWinsData[i - 1] / 12167) * (topWinsCanvas.height - 20);
+    const cpX = (prevX + x) / 2;
+    topWinsCtx.bezierCurveTo(cpX, prevY, cpX, y, x, y);
+  }
+});
+topWinsCtx.lineTo(topWinsCanvas.width, topWinsCanvas.height);
+topWinsCtx.closePath();
+topWinsCtx.fillStyle = gradient;
+topWinsCtx.fill();
+
+topWinsCtx.beginPath();
+topWinsData.forEach((value, i) => {
+  const x = i * stepX;
+  const y = topWinsCanvas.height - (value / 12167) * (topWinsCanvas.height - 20);
+  if (i === 0) topWinsCtx.moveTo(x, y);
+  else {
+    const prevX = (i - 1) * stepX;
+    const prevY = topWinsCanvas.height - (topWinsData[i - 1] / 12167) * (topWinsCanvas.height - 20);
+    const cpX = (prevX + x) / 2;
+    topWinsCtx.bezierCurveTo(cpX, prevY, cpX, y, x, y);
+  }
+});
+topWinsCtx.strokeStyle = '#2ecc71';
+topWinsCtx.lineWidth = 2;
+topWinsCtx.stroke();
+
+// Draw Probability Lattice
+const latticeViz = document.getElementById('latticeViz');
+const latticeCanvas = document.createElement('canvas');
+latticeCanvas.width = latticeViz.offsetWidth;
+latticeCanvas.height = latticeViz.offsetHeight;
+latticeViz.appendChild(latticeCanvas);
+const latticeCtx = latticeCanvas.getContext('2d');
+
+// Draw lattice gates
+const numGates = 8;
+const gateSpacing = latticeCanvas.width / (numGates + 1);
+const startY = 50;
+const endY = latticeCanvas.height - 100;
+
+for (let i = 0; i <= numGates; i++) {
+  const x = gateSpacing * i + gateSpacing / 2;
+  const y = startY + i * (endY - startY) / numGates;
+  
+  latticeCtx.strokeStyle = '#1a2a1a';
+  latticeCtx.lineWidth = 2;
+  latticeCtx.beginPath();
+  latticeCtx.moveTo(x - 30, y);
+  latticeCtx.lineTo(x + 30, y);
+  latticeCtx.stroke();
+  
+  latticeCtx.fillStyle = '#6a7a6a';
+  latticeCtx.font = '10px JetBrains Mono';
+  latticeCtx.textAlign = 'center';
+  latticeCtx.fillText(`G${i + 1}`, x, y - 10);
+}
+
+// Simulate and draw ball paths
+for (let b = 0; b < 50; b++) {
+  let xPos = latticeCanvas.width / 2;
+  const isProfitable = Math.random() > 0.25;
+  
+  latticeCtx.strokeStyle = isProfitable ? 'rgba(46, 204, 113, 0.3)' : 'rgba(231, 76, 60, 0.3)';
+  latticeCtx.lineWidth = 1;
+  latticeCtx.beginPath();
+  latticeCtx.moveTo(xPos, startY);
+  
+  for (let g = 0; g < numGates; g++) {
+    const direction = Math.random() > 0.5 ? 1 : -1;
+    const bias = isProfitable ? 0.6 : 0.4;
+    const actualDir = Math.random() < bias ? direction : -direction;
+    xPos += actualDir * gateSpacing * 0.3;
+    xPos = Math.max(50, Math.min(latticeCanvas.width - 50, xPos));
+    
+    const yPos = startY + (g + 1) * (endY - startY) / numGates;
+    latticeCtx.lineTo(xPos, yPos);
+  }
+  latticeCtx.stroke();
+}
+
+// Draw histogram
+const bins = 10;
+const binWidth = latticeCanvas.width / bins;
+const maxCount = 50;
+const histogramData = [5, 10, 15, 25, 35, 40, 45, 30, 15, 5];
+
+histogramData.forEach((count, i) => {
+  const isProfit = i >= bins / 2;
+  const height = (count / maxCount) * 100;
+  const x = i * binWidth + 2;
+  const y = latticeCanvas.height - 50 - height;
+  
+  latticeCtx.fillStyle = isProfit ? 'rgba(46, 204, 113, 0.4)' : 'rgba(231, 76, 60, 0.4)';
+  latticeCtx.fillRect(x, y, binWidth - 4, height);
+});
+
+latticeCtx.fillStyle = '#e74c3c';
+latticeCtx.font = '10px JetBrains Mono';
+latticeCtx.textAlign = 'center';
+latticeCtx.fillText('LOSS - 24%', latticeCanvas.width * 0.25, latticeCanvas.height - 30);
+
+latticeCtx.fillStyle = '#2ecc71';
+latticeCtx.fillText('PROFIT - 76%', latticeCanvas.width * 0.75, latticeCanvas.height - 30);
+
+// Draw Tail Probability Ridge
+const ridgeViz = document.getElementById('ridgeViz');
+const ridgeCanvas = document.createElement('canvas');
+ridgeCanvas.width = ridgeViz.offsetWidth;
+ridgeCanvas.height = ridgeViz.offsetHeight;
+ridgeViz.appendChild(ridgeCanvas);
+const ridgeCtx = ridgeCanvas.getContext('2d');
+
+const numRidges = 20;
+const ridgeSpacing = ridgeCanvas.height / (numRidges + 2);
+
+for (let i = 0; i < numRidges; i++) {
+  const y = ridgeSpacing * (i + 1);
+  const offset = Math.sin(i * 0.5) * 50;
+  
+  ridgeCtx.strokeStyle = `rgba(46, 204, 113, ${0.6 - i * 0.02})`;
+  ridgeCtx.lineWidth = 1.5;
+  ridgeCtx.beginPath();
+  
+  for (let x = 0; x <= ridgeCanvas.width; x += 20) {
+    const baseY = y;
+    const wave = Math.sin((x / ridgeCanvas.width) * Math.PI * 3) * 30;
+    const tailBoost = x > ridgeCanvas.width * 0.7 ? 40 : 0;
+    const yPos = baseY + wave + offset + tailBoost;
+    
+    if (x === 0) ridgeCtx.moveTo(x, yPos);
+    else ridgeCtx.lineTo(x, yPos);
+  }
+  ridgeCtx.stroke();
+}
+
+// Draw tail zone marker
+const tailX = ridgeCanvas.width * 0.75;
+ridgeCtx.strokeStyle = '#e74c3c';
+ridgeCtx.lineWidth = 1;
+ridgeCtx.setLineDash([5, 5]);
+ridgeCtx.beginPath();
+ridgeCtx.moveTo(tailX, 20);
+ridgeCtx.lineTo(tailX, ridgeCanvas.height - 20);
+ridgeCtx.stroke();
+ridgeCtx.setLineDash([]);
+
+ridgeCtx.fillStyle = '#e74c3c';
+ridgeCtx.font = '10px JetBrains Mono';
+ridgeCtx.textAlign = 'left';
+ridgeCtx.fillText('TAIL ZONE', tailX + 10, 30);
+
+// Draw strike marker
+const strikeX = ridgeCanvas.width * 0.6;
+ridgeCtx.strokeStyle = '#3ddc84';
+ridgeCtx.lineWidth = 2;
+ridgeCtx.setLineDash([3, 3]);
+ridgeCtx.beginPath();
+ridgeCtx.moveTo(strikeX, 20);
+ridgeCtx.lineTo(strikeX, ridgeCanvas.height - 20);
+ridgeCtx.stroke();
+ridgeCtx.setLineDash([]);
+
+ridgeCtx.fillStyle = '#3ddc84';
+ridgeCtx.fillText('STRIKE', strikeX + 10, 30);
+
+// Draw Relationship Graph
+const graphViz = document.getElementById('graphViz');
+const graphCanvas = document.createElement('canvas');
+graphCanvas.width = graphViz.offsetWidth;
+graphCanvas.height = graphViz.offsetHeight;
+graphViz.appendChild(graphCanvas);
+const graphCtx = graphCanvas.getContext('2d');
+
+// Create clusters
+const clusters = [
+  { x: graphCanvas.width * 0.25, y: graphCanvas.height * 0.3, label: 'BEAR_CLUSTER', color: '#e74c3c' },
+  { x: graphCanvas.width * 0.75, y: graphCanvas.height * 0.7, label: 'CATALYST_RING', color: '#3ddc84' },
+  { x: graphCanvas.width * 0.5, y: graphCanvas.height * 0.5, label: 'HUB_PRIME', color: '#e8f5e8' }
+];
+
+// Draw edges
+for (let i = 0; i < 40; i++) {
+  const source = clusters[Math.floor(Math.random() * clusters.length)];
+  const target = clusters[Math.floor(Math.random() * clusters.length)];
+  
+  graphCtx.strokeStyle = 'rgba(74, 90, 74, 0.3)';
+  graphCtx.lineWidth = 1;
+  graphCtx.beginPath();
+  graphCtx.moveTo(source.x, source.y);
+  graphCtx.lineTo(target.x, target.y);
+  graphCtx.stroke();
+}
+
+// Generate satellite nodes
+const nodes = [];
+for (let i = 0; i < 25; i++) {
+  const cluster = clusters[Math.floor(Math.random() * clusters.length)];
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 50 + Math.random() * 100;
+  const type = Math.random() > 0.5 ? 'bull' : 'bear';
+  
+  nodes.push({
+    x: cluster.x + Math.cos(angle) * distance,
+    y: cluster.y + Math.sin(angle) * distance,
+    type: type,
+    color: type === 'bull' ? '#2ecc71' : '#e74c3c'
+  });
+}
+
+// Draw nodes
+clusters.forEach(cluster => {
+  graphCtx.fillStyle = cluster.color;
+  graphCtx.beginPath();
+  graphCtx.arc(cluster.x, cluster.y, 20, 0, Math.PI * 2);
+  graphCtx.fill();
+  
+  graphCtx.fillStyle = '#6a7a6a';
+  graphCtx.font = '9px JetBrains Mono';
+  graphCtx.textAlign = 'center';
+  graphCtx.fillText(cluster.label, cluster.x, cluster.y + 35);
+});
+
+nodes.forEach(node => {
+  graphCtx.fillStyle = node.color;
+  graphCtx.globalAlpha = 0.7;
+  graphCtx.beginPath();
+  graphCtx.arc(node.x, node.y, 6, 0, Math.PI * 2);
+  graphCtx.fill();
+  graphCtx.globalAlpha = 1;
+});
+
+// Draw median path
+graphCtx.strokeStyle = '#8a9a8a';
+graphCtx.lineWidth = 2;
+graphCtx.setLineDash([5, 3]);
+graphCtx.globalAlpha = 0.6;
+graphCtx.beginPath();
+graphCtx.moveTo(clusters[0].x, clusters[0].y);
+graphCtx.bezierCurveTo(
+  graphCanvas.width / 2, graphCanvas.height / 2 - 50,
+  graphCanvas.width / 2, graphCanvas.height / 2 - 50,
+  clusters[2].x, clusters[2].y
+);
+graphCtx.bezierCurveTo(
+  graphCanvas.width * 0.625, graphCanvas.height * 0.6,
+  graphCanvas.width * 0.625, graphCanvas.height * 0.6,
+  clusters[1].x, clusters[1].y
+);
+graphCtx.stroke();
+graphCtx.setLineDash([]);
+graphCtx.globalAlpha = 1;
+
+// Draw arrow
+graphCtx.fillStyle = '#3ddc84';
+graphCtx.beginPath();
+graphCtx.moveTo(clusters[1].x - 10, clusters[1].y - 5);
+graphCtx.lineTo(clusters[1].x + 10, clusters[1].y);
+graphCtx.lineTo(clusters[1].x - 10, clusters[1].y + 5);
+graphCtx.fill();
+
+graphCtx.fillStyle = '#3ddc84';
+graphCtx.font = '10px JetBrains Mono';
+graphCtx.textAlign = 'left';
+graphCtx.fillText('ZERO ▲', clusters[1].x + 15, clusters[1].y);
+
+// Draw Edge Distribution Chart
+const edgeCanvas = document.getElementById('edgeDistributionChart');
+const edgeCtx = edgeCanvas.getContext('2d');
+edgeCanvas.width = edgeCanvas.offsetWidth;
+edgeCanvas.height = edgeCanvas.offsetHeight;
+
+const edgeData = [2, 5, 8, 15, 25, 35, 45, 30, 20, 10, 5];
+const edgeLabels = ['-5¢', '-4¢', '-3¢', '-2¢', '-1¢', '0', '+1¢', '+2¢', '+3¢', '+4¢', '+5¢'];
+const barWidth = edgeCanvas.width / edgeData.length - 4;
+const maxEdgeValue = 50;
+
+edgeData.forEach((value, i) => {
+  const isPositive = i >= 6;
+  const isZero = i === 5;
+  const barHeight = (value / maxEdgeValue) * (edgeCanvas.height - 30);
+  const x = i * (edgeCanvas.width / edgeData.length) + 2;
+  const y = edgeCanvas.height - barHeight - 20;
+  
+  if (isZero) edgeCtx.fillStyle = 'rgba(138, 154, 138, 0.6)';
+  else if (isPositive) edgeCtx.fillStyle = 'rgba(46, 204, 113, 0.6)';
+  else edgeCtx.fillStyle = 'rgba(231, 76, 60, 0.6)';
+  
+  edgeCtx.fillRect(x, y, barWidth, barHeight);
+});
+
+edgeCtx.fillStyle = '#6a7a6a';
+edgeCtx.font = '9px JetBrains Mono';
+edgeCtx.textAlign = 'center';
+edgeLabels.forEach((label, i) => {
+  const x = i * (edgeCanvas.width / edgeLabels.length) + (edgeCanvas.width / edgeLabels.length) / 2;
+  edgeCtx.fillText(label, x, edgeCanvas.height - 5);
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  location.reload();
+});
+</script>
+</body>
+</html>

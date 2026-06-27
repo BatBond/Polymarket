@@ -1,0 +1,18 @@
+mirofish-trading-bot/
+├── backend/
+│   ├── __init__.py
+│   ├── app.py
+│   ├── config.py
+│   ├── polymarket_client.py
+│   ├── trading_engine.py
+│   ├── requirements.txt
+│   └── .env
+├── frontend/
+│   ├── index.html
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       ├── dashboard.js
+│       ├── charts.js
+│       └── websocket.js
+└── README.md

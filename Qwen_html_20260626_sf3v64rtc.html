@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Fable 5 · Mirofish — Trading Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-dot"></div>
+                <div>
+                    <div class="header-title">
+                        ANONYMOUS WALLET <span class="wallet-address">0x06DC...4524</span>
+                        <span class="separator">·</span>
+                        <span id="total-fills">5,944 FILLS</span>
+                        <span class="separator">·</span>
+                        <span class="zero-label">ZERO_</span>
+                    </div>
+                    <div class="model-name">CLAUDE FABLE 5 · <span class="mirofish">MIROFISH</span></div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge live" id="status-badge">
+                    <span class="status-dot"></span>
+                    LIVE · MAINNET
+                </div>
+                <div class="round-info">
+                    ROUND <span class="round-number">#7105</span>
+                </div>
+                <div class="utc-time" id="utc-time">22:09:48 UTC</div>
+            </div>
+        </header>
+
+        <!-- Top Stats Section -->
+        <section class="top-stats">
+            <div class="pnl-card">
+                <div class="pnl-label">
+                    <span class="dot red"></span>
+                    CLAUDE FABLE 5 · TOTAL PNL
+                    <span class="badge crypto-tail-sniper">CRYPTO TAIL SNIPER</span>
+                    <span class="badge btc">+1 BTC</span>
+                </div>
+                <div class="pnl-value" id="total-pnl">$406,984</div>
+                <div class="pnl-meta">
+                    <span>realised · anonymous</span>
+                    <span class="stat-item"><span id="total-trades">5,944</span> trades</span>
+                    <span class="stat-item win-rate"><span id="win-rate">71</span>% WR</span>
+                    <span class="stat-item">Sharpe <span id="sharpe">4.21</span></span>
+                </div>
+                <div class="pnl-breakdown">
+                    <div class="pnl-item">
+                        <div class="pnl-amount positive">+$31,423</div>
+                        <div class="pnl-desc">ETH +2.8K · APR</div>
+                    </div>
+                    <div class="pnl-item">
+                        <div class="pnl-amount positive">+$29,247</div>
+                        <div class="pnl-desc">XRP UP · APR B</div>
+                    </div>
+                    <div class="pnl-item">
+                        <div class="pnl-amount positive">+$28,062</div>
+                        <div class="pnl-desc">BTC +66K · JUN</div>
+                    </div>
+                    <div class="pnl-item">
+                        <div class="pnl-amount positive">+$14,276</div>
+                        <div class="pnl-desc">ETH +2.4K · APR</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="top-wins-card">
+                <div class="card-header">
+                    <span>★ TOP WINS · BTC · POLYMARKET</span>
+                    <span class="win-count">6 / 6</span>
+                </div>
+                <div class="win-stats">
+                    <div class="multiplier">x32<span class="sub-mult">+47</span></div>
+                    <div class="win-details">
+                        <div class="detail-row">
+                            <span>APR · 80L ± +100 · VES @ 1.4%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>ENTRY <span class="highlight">$387</span></span>
+                            <span class="arrow">→</span>
+                            <span>PAYOUT <span class="highlight positive">$12,553</span></span>
+                        </div>
+                    </div>
+                    <div class="win-amount positive">+$12,167</div>
+                </div>
+                <canvas id="topWinsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Probability Lattice Section -->
+        <section class="section probability-lattice">
+            <div class="section-header">
+                <span class="dot" style="background: var(--green);"></span>
+                Probability Lattice · <span id="lattice-trades">5,944</span> Trades, One Board
+            </div>
+            <div class="lattice-container">
+                <div class="lattice-stats">
+                    <div class="stat-group">
+                        <div class="stat-label">LIVE CONVERGENCE</div>
+                        <div class="stat-row">
+                            <span class="stat-name">BALLS DROPPED</span>
+                            <span class="stat-value" id="balls-dropped">265</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">LANDED GREEN</span>
+                            <span class="stat-value positive" id="landed-green">75.8%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">EV / TRADE</span>
+                            <span class="stat-value positive" id="ev-trade">+$75</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">SESSION P&L</span>
+                            <span class="stat-value positive" id="session-pnl">+$19,778</span>
+                        </div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-row">
+                            <span class="stat-name">ALL-TIME</span>
+                            <span class="stat-value" id="all-time-trades">5,944</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">REALISED</span>
+                            <span class="stat-value positive" id="all-time-pnl">+$401,819</span>
+                        </div>
+                    </div>
+                    <div class="law-text">
+                        LAW OF LARGE NUMBERS — THE EDGE<br>
+                        ONLY NEEDS REPETITION
+                    </div>
+                </div>
+                <div class="lattice-viz" id="probability-lattice-viz"></div>
+            </div>
+        </section>
+
+        <!-- Tail Probability Ridge Section -->
+        <section class="section tail-ridge">
+            <div class="section-header">
+                <span class="dot" style="background: var(--green);"></span>
+                Tail Probability Ridge · Strike Landscape
+            </div>
+            <div class="ridge-container">
+                <div class="ridge-stats">
+                    <div class="stat-label">TAIL SCANNER · LIVE</div>
+                    <div class="stat-row">
+                        <span class="stat-name">SESSIONS</span>
+                        <span class="stat-value" id="ridge-sessions">1,292</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">TAIL MASS</span>
+                        <span class="stat-value" id="tail-mass">0.21%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">IMPLIED MULT</span>
+                        <span class="stat-value" id="implied-mult">×476.2</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">AVG ENTRY</span>
+                        <span class="stat-value" id="avg-entry">1.2¢</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">BEST HIT</span>
+                        <span class="stat-value positive" id="best-hit">×81.2</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">ALL-TIME</span>
+                        <span class="stat-value" id="ridge-all-time">5,944</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">REALISED</span>
+                        <span class="stat-value positive" id="ridge-realised">+$401,819</span>
+                    </div>
+                    <div class="pennies-text">
+                        PENNIES INTO THE TAIL — HUNDREDS<br>
+                        OUT WHEN THE STRIKE BREAKS
+                    </div>
+                </div>
+                <div class="ridge-viz" id="tail-ridge-viz"></div>
+            </div>
+        </section>
+
+        <!-- Relationship Graph Section -->
+        <section class="section relationship-graph">
+            <div class="section-header">
+                <span class="dot" style="background: var(--green);"></span>
+                MIROFISH · RELATIONSHIP GRAPH SIMULATION
+            </div>
+            <div class="graph-container">
+                <div class="graph-legend">
+                    <div class="legend-title">NODE CLASS</div>
+                    <div class="legend-item">
+                        <span class="legend-dot bear"></span>
+                        <span>Bear signal</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot bull"></span>
+                        <span>Bull signal</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot median"></span>
+                        <span>Median path</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot catalyst"></span>
+                        <span>Catalyst</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot cluster"></span>
+                        <span>Cluster hub</span>
+                    </div>
+                    <div class="graph-stats">
+                        <div class="stat-row">
+                            <span class="stat-name">BEAR PATHS</span>
+                            <span class="stat-value" id="bear-paths">570</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">BULL PATHS</span>
+                            <span class="stat-value" id="bull-paths">1,433</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">PATHS SIM</span>
+                            <span class="stat-value" id="paths-sim">2,112</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">ITER / SEC</span>
+                            <span class="stat-value" id="iter-sec">281</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">CONVERGENCE</span>
+                            <span class="stat-value" id="convergence">95%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">PREDICTED</span>
+                            <span class="stat-value positive" id="predicted">▲ UP</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">MEDIAN FAIR</span>
+                            <span class="stat-value" id="median-fair">$75,181</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="graph-viz" id="relationship-graph-viz"></div>
+                <div class="graph-metrics">
+                    <div class="metrics-header">
+                        <span>NODES <span id="node-count">66</span></span>
+                        <span>EDGES <span id="edge-count">149</span></span>
+                        <span>SIGNAL <span id="signal-strength">94.8%</span></span>
+                        <span>ITER <span id="iter-count">1136</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">P(UP)</span>
+                        <span class="metric-value positive" id="p-up">0.72</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">P(DOWN)</span>
+                        <span class="metric-value negative" id="p-down">0.28</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">EDGE VS BOOK</span>
+                        <span class="metric-value positive" id="edge-book">+32¢</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">CONFIDENCE</span>
+                        <span class="metric-value" id="confidence">94.8%</span>
+                    </div>
+                    <canvas id="edgeDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-item">AGENT ONLINE</div>
+            <div class="footer-item">MODEL CLAUDE-FABLE-5</div>
+            <div class="footer-item">TRACKER 0X06DC...4524</div>
+            <div class="footer-item" id="footer-fills">5,944 FILLS</div>
+            <div class="footer-item">BACKTEST BY · 41.9 GB</div>
+            <div class="footer-item">LATENCY 10MS</div>
+            <div class="footer-item">STACK MIROFISH-CORE · FABLE-FORK</div>
+        </footer>
+    </div>
+
+    <script src="js/charts.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
